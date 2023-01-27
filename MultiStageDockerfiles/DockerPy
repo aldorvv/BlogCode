@@ -1,0 +1,6 @@
+FROM ubuntu:latest
+
+RUN apt update
+RUN apt install figlet
+
+CMD ["figlet", "-c", "Hello from dockerized ubuntu!"]

@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  db:
+    build: ./db
+    platform: linux/x86_64
+    container_name: db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=todos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      start_period: 10s
+      timeout: 4s
+      retries: 3
+    image: db:1.0
+    volumes:
+      - type: volume
+        source: db-volume
+        target: /data/mysql
+
+  app:
+    depends_on:
+      - db
+    build: ./app
+    environment:
+      - DB_URI=root:root@tcp(db:3306)/todos?parseTime=true
+    image: api:1.0
+    ports:
+      - "80:8080"
+
+volumes:
+    db-volume:
+        name: db-volume
